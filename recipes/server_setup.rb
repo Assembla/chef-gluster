@@ -76,6 +76,15 @@ node['gluster']['server']['volumes'].each do |volume_name, volume_values|
         bricks << "#{node['gluster']['server']['brick_mount_path']}/#{d}1/#{volume_name}"
       end
     end
+
+    if bricks == []
+      directory "#{node['gluster']['server']['brick_mount_path']}/#{volume_name}" do
+        action :create
+        recursive true
+      end
+      bricks << "#{node['gluster']['server']['brick_mount_path']}/#{volume_name}"
+    end
+
     # Save the array of bricks to the node's attributes
     node.set['gluster']['server']['bricks'] = bricks
   end
@@ -98,9 +107,8 @@ node['gluster']['server']['volumes'].each do |volume_name, volume_values|
       volume_bricks = {}
       brick_count = 0
       volume_values['peers'].each do |peer|
-        chef_node = Chef::Node.find_or_create(peer)
-        if chef_node['gluster']['server'].attribute?('bricks')
-          peer_bricks = chef_node['gluster']['server']['bricks'].select { |brick| brick.include? volume_name }
+        if node['gluster']['server']['bricks']
+          peer_bricks = node['gluster']['server']['bricks'].select { |brick| brick.include? volume_name }
           volume_bricks[peer] = peer_bricks
           brick_count += (peer_bricks.count || 0)
         end rescue NoMethodError
@@ -134,7 +142,11 @@ node['gluster']['server']['volumes'].each do |volume_name, volume_values|
           end
         end
       end
-      
+
+      if node['gluster']['server']['force_create_disks']
+        options << " force"
+      end
+
       execute "gluster volume create #{volume_name} #{options}" do
         action :run
       end

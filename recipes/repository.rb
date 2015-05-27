@@ -16,8 +16,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 case node['platform']
+when 'debian'
+  include_recipe 'apt::default'
+
+  version_array = node['gluster']['version'].split('.')
+  version_array << '0' if version_array.size == 2
+  version_major = "#{version_array[0]}.#{version_array[1]}"
+  version_full = version_array.join('.')
+  repository_base = "http://download.gluster.org/pub/gluster/glusterfs/#{version_major}/#{version_full}/Debian/wheezy/"
+
+  apt_repository "glusterfs-#{node['gluster']['version']}" do
+    uri "#{repository_base}apt/"
+    distribution node['lsb']['codename']
+    components ['main']
+    key "#{repository_base}pubkey.gpg"
+    deb_src false
+    not_if do
+      File.exist?("/etc/apt/sources.list.d/glusterfs-#{node['gluster']['version']}.list")
+    end
+  end
 when 'ubuntu'
   include_recipe 'apt::default'
 

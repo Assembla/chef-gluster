@@ -29,5 +29,6 @@ package node['gluster']['server']['package']
 
 # Make sure the service is started
 service node['gluster']['server']['servicename'] do
+  pattern node['gluster']['server']['pattern'] if node['gluster']['server']['pattern']
   action [:enable, :start]
 end
