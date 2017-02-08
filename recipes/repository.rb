@@ -24,7 +24,7 @@ when 'debian'
   version_array << '0' if version_array.size == 2
   version_major = "#{version_array[0]}.#{version_array[1]}"
   version_full = version_array.join('.')
-  repository_base = "http://download.gluster.org/pub/gluster/glusterfs/#{version_major}/#{version_full}/Debian/wheezy/"
+  repository_base = "https://download.gluster.org/pub/gluster/glusterfs/#{version_major}/#{version_full}/Debian/wheezy/"
 
   apt_repository "glusterfs-#{node['gluster']['version']}" do
     uri "#{repository_base}apt/"
@@ -40,7 +40,7 @@ when 'ubuntu'
   include_recipe 'apt::default'
 
   apt_repository "glusterfs-#{node['gluster']['version']}" do
-    uri "http://ppa.launchpad.net/gluster/glusterfs-#{node['gluster']['version']}/ubuntu"
+    uri "https://ppa.launchpad.net/gluster/glusterfs-#{node['gluster']['version']}/ubuntu"
     distribution node['lsb']['codename']
     components ['main']
     keyserver 'keyserver.ubuntu.com'
@@ -52,7 +52,7 @@ when 'ubuntu'
   end
 when 'redhat', 'centos'
   yum_repository 'glusterfs' do
-    url "http://download.gluster.org/pub/gluster/glusterfs/#{node['gluster']['version']}/LATEST/EPEL.repo/epel-$releasever/$basearch/"
+    url "https://download.gluster.org/pub/gluster/glusterfs/#{node['gluster']['version']}/LATEST/EPEL.repo/epel-$releasever/$basearch/"
     gpgcheck false
     action :create
   end
