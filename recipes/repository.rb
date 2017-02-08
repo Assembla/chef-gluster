@@ -30,7 +30,7 @@ when 'debian'
     uri "#{repository_base}apt/"
     distribution node['lsb']['codename']
     components ['main']
-    key "#{repository_base}pubkey.gpg"
+    key "https://download.gluster.org/pub/gluster/glusterfs/#{node['gluster']['version']}/LATEST/rsa.pub"
     deb_src false
     not_if do
       File.exist?("/etc/apt/sources.list.d/glusterfs-#{node['gluster']['version']}.list")
